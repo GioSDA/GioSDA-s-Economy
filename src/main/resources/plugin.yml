@@ -1,0 +1,13 @@
+name: GioSDAs-Economy
+version: '${project.version}'
+main: io.github.giosda.giosdaeconomy.Economy
+api-version: 1.18
+authors: [ GioSDA ]
+description: GioSDA's economy plugin
+
+commands:
+  balance:
+    description: Get player balance.
+    aliases: [balance, bal]
+    usage: "Usage: /<command> [player]"
+    default: true
