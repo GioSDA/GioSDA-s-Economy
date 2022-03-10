@@ -11,3 +11,8 @@ commands:
     aliases: [balance, bal]
     usage: "Usage: /<command> [player]"
     default: true
+  pay:
+    description: Pay a player money.
+    aliases: [pay, give]
+    usage: "Usage: /<command> [player] [amount]"
+    default: true

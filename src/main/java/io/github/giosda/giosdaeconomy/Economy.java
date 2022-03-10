@@ -1,8 +1,8 @@
 package io.github.giosda.giosdaeconomy;
 
 import io.github.giosda.giosdaeconomy.commands.BalanceCommand;
+import io.github.giosda.giosdaeconomy.commands.PayCommand;
 import io.github.giosda.giosdaeconomy.listeners.PlayerJoinListener;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -21,6 +21,7 @@ public final class Economy extends JavaPlugin {
 		loadBalances();
 
 		getCommand("balance").setExecutor(new BalanceCommand());
+		getCommand("pay").setExecutor(new PayCommand());
 
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
 	}
