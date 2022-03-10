@@ -28,7 +28,7 @@ public class BalanceCommand implements CommandExecutor {
 			}
 
 		} else { //Referring to player
-			OfflinePlayer p = Bukkit.getOfflinePlayer(args[1]); //This line is dangerous
+			OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]); //This line is dangerous
 
 			if (Economy.playerBalances.containsKey(p.getUniqueId())) {
 				sender.sendMessage(p.getName() + " has §e$" + Economy.playerBalances.get(p.getUniqueId()));
