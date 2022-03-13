@@ -2,6 +2,7 @@ package io.github.giosda.giosdaeconomy.commands;
 
 import io.github.giosda.giosdaeconomy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,13 +16,13 @@ public class PayCommand implements CommandExecutor {
 			Player p = (Player) sender;
 
 			if (!Economy.playerBalances.containsKey(p.getUniqueId())) {
-				sender.sendMessage("§4What have you done");
+				sender.sendMessage(ChatColor.DARK_RED + "What have you done");
 				return true;
 			}
 
 			Player p2 = Bukkit.getPlayer(args[0]);
 			if (p2 == null) {
-				sender.sendMessage("§cThis player is not online!");
+				sender.sendMessage(ChatColor.RED + "This player is not online!");
 				return true;
 			}
 
@@ -33,21 +34,21 @@ public class PayCommand implements CommandExecutor {
 				try {
 					amount = Integer.parseInt(args[1]);
 				} catch (NumberFormatException e) {
-					p.sendMessage("§cAmount paid must be a whole number!");
+					p.sendMessage(ChatColor.RED + "Amount paid must be a whole number!");
 					return true;
 				}
 
 				if (amount > 0) {
 					Economy.playerBalances.put(p2.getUniqueId(), Economy.playerBalances.get(p2.getUniqueId()) + amount);
 					Economy.playerBalances.put(p.getUniqueId(), Economy.playerBalances.get(p.getUniqueId()) - amount);
-					p.sendMessage("§aSuccessfully transferred §e$" + amount + " §ato " + p2.getDisplayName());
-					p2.sendMessage("§aYou received §e$" + amount + " §afrom " + p.getDisplayName());
+					p.sendMessage(ChatColor.GREEN + "Successfully transferred + " + ChatColor.YELLOW + "$" + amount + ChatColor.GREEN + " to " + p2.getDisplayName());
+					p2.sendMessage(ChatColor.GREEN + "You received " + ChatColor.YELLOW + "$" + amount + ChatColor.GREEN + " from " + p.getDisplayName());
 				} else {
-					sender.sendMessage("§cYou can't send less than §e$1");
+					sender.sendMessage(ChatColor.RED + "You can't send less than " + ChatColor.YELLOW + "$1");
 				}
 
 			} else {
-				sender.sendMessage("§4What have you done");
+				sender.sendMessage(ChatColor.DARK_RED + "What have you done");
 			}
 			return true;
 		}
