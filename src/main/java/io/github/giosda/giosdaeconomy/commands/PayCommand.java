@@ -25,22 +25,31 @@ public class PayCommand implements CommandExecutor {
 				return true;
 			}
 
+
+
 			if (Economy.playerBalances.containsKey(p2.getUniqueId())) {
-				int amount = Integer.parseInt(args[1]);
-				if (amount >= 0) {
+				int amount;
+
+				try {
+					amount = Integer.parseInt(args[1]);
+				} catch (NumberFormatException e) {
+					p.sendMessage("§cAmount paid must be a whole number!");
+					return true;
+				}
+
+				if (amount > 0) {
 					Economy.playerBalances.put(p2.getUniqueId(), Economy.playerBalances.get(p2.getUniqueId()) + amount);
 					Economy.playerBalances.put(p.getUniqueId(), Economy.playerBalances.get(p.getUniqueId()) - amount);
 					p.sendMessage("§aSuccessfully transferred §e$" + amount + " §ato " + p2.getDisplayName());
 					p2.sendMessage("§aYou received §e$" + amount + " §afrom " + p.getDisplayName());
-					return true;
 				} else {
 					sender.sendMessage("§cYou can't send less than §e$1");
-					return true;
 				}
+
 			} else {
 				sender.sendMessage("§4What have you done");
-				return true;
 			}
+			return true;
 		}
 
 		sender.sendMessage("Only players can run this command!");
