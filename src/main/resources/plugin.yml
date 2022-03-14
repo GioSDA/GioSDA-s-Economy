@@ -16,3 +16,11 @@ commands:
     aliases: [pay, give]
     usage: "Usage: /<command> [player] [amount]"
     default: true
+  auction:
+    description: Check the auction house.
+    aliases: [auction, ah, auctionhouse]
+    usage: "Usage: /<command>"
+    default: true
+  debug:
+    description: debug.
+    default: op
