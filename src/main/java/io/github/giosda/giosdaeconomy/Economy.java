@@ -68,6 +68,7 @@ public final class Economy extends JavaPlugin {
 
 		getLogger().info(gson.toJson(playerBalances));
 		writer.write(gson.toJson(playerBalances));
+		writer.flush();
 	}
 
 	public void addDefaults() {
@@ -87,6 +88,7 @@ public final class Economy extends JavaPlugin {
 			writer.write("{}");
 
 			reader = new BufferedReader(new FileReader("plugins/GioSDAs-Economy/balances.json"));
+			reader.close();
 		}
 
 		GsonBuilder builder = new GsonBuilder();
