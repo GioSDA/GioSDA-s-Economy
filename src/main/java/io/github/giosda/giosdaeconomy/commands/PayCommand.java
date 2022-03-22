@@ -34,26 +34,23 @@ public class PayCommand implements CommandExecutor {
 
 
 			if (Economy.playerBalances.containsKey(p2.getUniqueId())) {
-				int amount;
-
 				try {
-					amount = Integer.parseInt(args[1]);
-				} catch (NumberFormatException e) {
-					p.sendMessage(ChatColor.RED + "Amount paid must be a whole number!");
-					return true;
-				}
-
-				if (amount > 0) {
-					if (Economy.playerBalances.get(p.getUniqueId()) > amount) {
+					int amount = Integer.parseInt(args[1]);
+					if (amount > 0) {
+						if (Economy.playerBalances.get(p.getUniqueId()) > amount) {
 							Economy.playerBalances.put(p2.getUniqueId(), Economy.playerBalances.get(p2.getUniqueId()) + amount);
 							Economy.playerBalances.put(p.getUniqueId(), Economy.playerBalances.get(p.getUniqueId()) - amount);
 							p.sendMessage(ChatColor.GREEN + "Successfully transferred " + ChatColor.YELLOW + "$" + amount + ChatColor.GREEN + " to " + p2.getDisplayName());
 							p2.sendMessage(ChatColor.GREEN + "You received " + ChatColor.YELLOW + "$" + amount + ChatColor.GREEN + " from " + p.getDisplayName());
+						} else {
+							p.sendMessage(ChatColor.RED + "You don't have that much money!");
+						}
 					} else {
-						sender.sendMessage(ChatColor.RED + "You don't have that much money!");
+						sender.sendMessage(ChatColor.RED + "You can't send less than " + ChatColor.YELLOW + "$1");
 					}
-				} else {
-					sender.sendMessage(ChatColor.RED + "You can't send less than " + ChatColor.YELLOW + "$1");
+				} catch (NumberFormatException e) {
+					p.sendMessage(ChatColor.RED + "Amount paid must be a whole number!");
+					return true;
 				}
 
 			} else {

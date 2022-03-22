@@ -2,9 +2,9 @@ package io.github.giosda.giosdaeconomy.commands;
 
 import io.github.giosda.giosdaeconomy.Economy;
 import io.github.giosda.giosdaeconomy.objects.AuctionItem;
-import jdk.incubator.jpackage.internal.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class AuctionHouseCommand implements CommandExecutor {
@@ -42,11 +41,31 @@ public class AuctionHouseCommand implements CommandExecutor {
 					Player p = (Player) sender;
 
 					ItemStack i = p.getInventory().getItemInMainHand();
+					if (i.getType() == Material.AIR || i.getType() == null) {
+						p.sendMessage(ChatColor.RED + "You can't sell nothing!");
+						return true;
+					}
 
-					AuctionItem item = new AuctionItem(10, p.getUniqueId(), i);
-					p.getInventory().removeItem(i);
-					Economy.auctionHouse.add(item);
-					p.sendMessage(ChatColor.GREEN + "Successfully put item up for auction!");
+					if (args.length > 1) {
+						try {
+							int startingBid = Integer.parseInt(args[1]);
+							if (startingBid > 0) {
+								AuctionItem item = new AuctionItem(startingBid, p.getUniqueId(), i);
+								p.getInventory().removeItem(i);
+								Economy.auctionHouse.add(item);
+								p.sendMessage(ChatColor.GREEN + "Successfully put item up for auction!");
+							} else {
+								p.sendMessage(ChatColor.RED + "You can't start with less than " + ChatColor.YELLOW + "$1");
+							}
+						} catch (NumberFormatException e) {
+							p.sendMessage(ChatColor.RED + "Starting bid must be a whole number!");
+							return true;
+						}
+					} else {
+						p.sendMessage(ChatColor.RED + "Please include a starting bid!");
+					}
+
+
 				} else {
 					sender.sendMessage("Only players can run this command!");
 				}
@@ -60,8 +79,9 @@ public class AuctionHouseCommand implements CommandExecutor {
 	public void createAuctionGUI(Player p) {
 		Inventory gui = Bukkit.createInventory(p, 54, ChatColor.AQUA + "Auction House");
 
-		for (int i = 0; i < Economy.auctionHouse.size(); i++) {
-			AuctionItem auctionItem = Economy.auctionHouse.get(i);
+		int i = 0;
+
+		for (AuctionItem auctionItem : Economy.auctionHouse) {
 			ItemStack item = auctionItem.getItem();
 
 			if (item.hasItemMeta()) {
@@ -77,10 +97,22 @@ public class AuctionHouseCommand implements CommandExecutor {
 				meta.setLore(lore);
 				item.setItemMeta(meta);
 			} else {
+				ItemMeta meta = new ItemStack(Material.IRON_SWORD).getItemMeta();
+				ArrayList<String> lore = new ArrayList<>();
 
+				lore.add(ChatColor.BLUE + "Seller: " + ChatColor.AQUA + Bukkit.getPlayer(auctionItem.getSeller()).getName());
+				lore.add(ChatColor.BLUE + "Current bid: " + ChatColor.YELLOW + "$" + auctionItem.getBid());
+
+				meta.setLore(lore);
+				item.setItemMeta(meta);
 			}
 
-			gui.addItem(item);
+			gui.setItem(i, item);
+			i++;
+		}
+
+		for (i = i; i < gui.getSize(); i++) {
+			gui.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
 		}
 
 		p.openInventory(gui);
