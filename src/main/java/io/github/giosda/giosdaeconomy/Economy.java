@@ -8,20 +8,29 @@ import io.github.giosda.giosdaeconomy.commands.BalanceCommand;
 import io.github.giosda.giosdaeconomy.commands.DebugCommand;
 import io.github.giosda.giosdaeconomy.commands.PayCommand;
 import io.github.giosda.giosdaeconomy.listeners.PlayerJoinListener;
+import io.github.giosda.giosdaeconomy.objects.AuctionItem;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public final class Economy extends JavaPlugin {
 
+	public static List<AuctionItem> auctionHouse = new ArrayList<>();
 	public static HashMap<UUID, Integer> playerBalances = new HashMap<>();
 	public static int loginBalance;
 
+	public static Logger logger;
+
 	@Override
 	public void onEnable() {
+		logger = getLogger();
+
 		saveDefaultConfig();
 		addDefaults();
 
