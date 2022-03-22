@@ -35,8 +35,10 @@ public final class Economy extends JavaPlugin {
 		addDefaults();
 
 		try {
+			loadAuctionHouse();
 			loadBalances();
 		} catch (IOException e) {
+			getLogger().info("Gio's Economy had an issue loading data.");
 			e.printStackTrace();
 		}
 
@@ -52,8 +54,9 @@ public final class Economy extends JavaPlugin {
 	public void onDisable() {
 		try {
 			saveBalances();
+			saveAuctionHouse();
 		} catch (IOException e) {
-			getLogger().info("Couldn't save balances!");
+			getLogger().info("Couldn't save data!");
 			e.printStackTrace();
 		}
 	}
@@ -110,6 +113,54 @@ public final class Economy extends JavaPlugin {
 
 		if (getConfig().contains("loginBalance")) loginBalance = (int) getConfig().get("loginBalance");
 		else loginBalance = 1000;
+	}
+
+	//TODO: shit dont work
+	public void loadAuctionHouse() throws IOException {
+		BufferedReader reader;
+
+		try {
+			reader = new BufferedReader(new FileReader("plugins/GioSDAs-Economy/auctionhouse.json"));
+		} catch (FileNotFoundException e) {
+			File file = new File("plugins/GioSDAs-Economy/auctionhouse.json");
+			file.createNewFile();
+
+			FileWriter writer = new FileWriter("plugins/GioSDAs-Economy/auctionhouse.json");
+			writer.write("{}");
+
+			reader = new BufferedReader(new FileReader("plugins/GioSDAs-Economy/auctionhouse.json"));
+			reader.close();
+		}
+
+		GsonBuilder builder = new GsonBuilder();
+		Gson gson = builder.create();
+
+		Type type = new TypeToken<ArrayList<AuctionItem>>(){}.getType();
+		auctionHouse = gson.fromJson(reader, type);
+
+		if (auctionHouse == null) auctionHouse = new ArrayList<>();
+	}
+
+	public void saveAuctionHouse() throws IOException {
+		FileWriter writer;
+
+		try {
+			writer = new FileWriter("plugins/GioSDAs-Economy/auctionhouse.json");
+		} catch (FileNotFoundException e) {
+			File file = new File("plugins/GioSDAs-Economy/auctionhouse.json");
+			if (file.createNewFile()) writer = new FileWriter("plugins/GioSDAs-Economy/auctionhouse.json");
+			else {
+				e.printStackTrace();
+				return;
+			}
+		}
+
+		GsonBuilder builder = new GsonBuilder();
+		Gson gson = builder.create();
+
+		getLogger().info(gson.toJson(auctionHouse));
+		writer.write(gson.toJson(auctionHouse));
+		writer.flush();
 	}
 
 	public static int getLoginBalance() {
