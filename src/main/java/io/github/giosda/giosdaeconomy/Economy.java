@@ -9,21 +9,21 @@ import io.github.giosda.giosdaeconomy.commands.DebugCommand;
 import io.github.giosda.giosdaeconomy.commands.PayCommand;
 import io.github.giosda.giosdaeconomy.listeners.PlayerJoinListener;
 import io.github.giosda.giosdaeconomy.objects.AuctionItem;
+import io.github.giosda.giosdaeconomy.runnables.AutoSaveTask;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Logger;
 
 public final class Economy extends JavaPlugin {
 
 	public static List<AuctionItem> auctionHouse = new ArrayList<>();
 	public static HashMap<UUID, Integer> playerBalances = new HashMap<>();
-	public static int loginBalance;
+	public static int loginBalance = 1000;
+	public static long autoSaveInterval = 6000;
 
 	public static Logger logger;
 
@@ -48,6 +48,8 @@ public final class Economy extends JavaPlugin {
 		getCommand("auction").setExecutor(new AuctionHouseCommand());
 
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
+
+		BukkitTask autoSaveTask = new AutoSaveTask().runTaskTimer(this, autoSaveInterval, autoSaveInterval);
 	}
 
 	@Override
@@ -61,47 +63,29 @@ public final class Economy extends JavaPlugin {
 		}
 	}
 
-	public void saveBalances() throws IOException {
-		FileWriter writer;
+	public void addDefaults() {
+		getConfig().addDefault("loginBalance", 1000);
+		getConfig().addDefault("autoSaveInterval", 6000);
+	}
 
-		try {
-			writer = new FileWriter("plugins/GioSDAs-Economy/balances.json");
-		} catch (FileNotFoundException e) {
-			File file = new File("plugins/GioSDAs-Economy/balances.json");
-			if (file.createNewFile()) writer = new FileWriter("plugins/GioSDAs-Economy/balances.json");
-			else {
-				e.printStackTrace();
-				return;
-			}
-		}
+	public static void saveBalances() throws IOException {
+		File file = new File("plugins/GioSDAs-Economy/balances.json");
+		file.createNewFile();
+
+		FileWriter writer = new FileWriter(file);
 
 		GsonBuilder builder = new GsonBuilder();
 		Gson gson = builder.create();
 
-		getLogger().info(gson.toJson(playerBalances));
 		writer.write(gson.toJson(playerBalances));
 		writer.flush();
 	}
 
-	public void addDefaults() {
-		getConfig().addDefault("loginBalance", 1000);
-	}
-
 	public void loadBalances() throws IOException {
-		BufferedReader reader;
+		File file = new File("plugins/GioSDAs-Economy/balances.json");
+		file.createNewFile();
 
-		try {
-			reader = new BufferedReader(new FileReader("plugins/GioSDAs-Economy/balances.json"));
-		} catch (FileNotFoundException e) {
-			File file = new File("plugins/GioSDAs-Economy/balances.json");
-			file.createNewFile();
-
-			FileWriter writer = new FileWriter("plugins/GioSDAs-Economy/balances.json");
-			writer.write("{}");
-
-			reader = new BufferedReader(new FileReader("plugins/GioSDAs-Economy/balances.json"));
-			reader.close();
-		}
+		FileReader reader = new FileReader(file);
 
 		GsonBuilder builder = new GsonBuilder();
 		Gson gson = builder.create();
@@ -112,25 +96,14 @@ public final class Economy extends JavaPlugin {
 		if (playerBalances == null) playerBalances = new HashMap<>();
 
 		if (getConfig().contains("loginBalance")) loginBalance = (int) getConfig().get("loginBalance");
-		else loginBalance = 1000;
 	}
 
 	//TODO: shit dont work
 	public void loadAuctionHouse() throws IOException {
-		BufferedReader reader;
+		File file = new File("plugins/GioSDAs-Economy/auctionhouse.json");
+		file.createNewFile();
 
-		try {
-			reader = new BufferedReader(new FileReader("plugins/GioSDAs-Economy/auctionhouse.json"));
-		} catch (FileNotFoundException e) {
-			File file = new File("plugins/GioSDAs-Economy/auctionhouse.json");
-			file.createNewFile();
-
-			FileWriter writer = new FileWriter("plugins/GioSDAs-Economy/auctionhouse.json");
-			writer.write("{}");
-
-			reader = new BufferedReader(new FileReader("plugins/GioSDAs-Economy/auctionhouse.json"));
-			reader.close();
-		}
+		FileReader reader = new FileReader(file);
 
 		GsonBuilder builder = new GsonBuilder();
 		Gson gson = builder.create();
@@ -141,24 +114,15 @@ public final class Economy extends JavaPlugin {
 		if (auctionHouse == null) auctionHouse = new ArrayList<>();
 	}
 
-	public void saveAuctionHouse() throws IOException {
-		FileWriter writer;
+	public static void saveAuctionHouse() throws IOException {
+		File file = new File("plugins/GioSDAs-Economy/auctionhouse.json");
+		file.createNewFile();
 
-		try {
-			writer = new FileWriter("plugins/GioSDAs-Economy/auctionhouse.json");
-		} catch (FileNotFoundException e) {
-			File file = new File("plugins/GioSDAs-Economy/auctionhouse.json");
-			if (file.createNewFile()) writer = new FileWriter("plugins/GioSDAs-Economy/auctionhouse.json");
-			else {
-				e.printStackTrace();
-				return;
-			}
-		}
+		FileWriter writer = new FileWriter(file);
 
 		GsonBuilder builder = new GsonBuilder();
-		Gson gson = builder.create();
+		Gson gson = builder.setPrettyPrinting().create();
 
-		getLogger().info(gson.toJson(auctionHouse));
 		writer.write(gson.toJson(auctionHouse));
 		writer.flush();
 	}

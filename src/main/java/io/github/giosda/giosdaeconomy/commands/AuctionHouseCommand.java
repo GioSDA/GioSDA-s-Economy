@@ -12,13 +12,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.io.BukkitObjectOutputStream;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 public class AuctionHouseCommand implements CommandExecutor {
-
-
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -41,7 +43,7 @@ public class AuctionHouseCommand implements CommandExecutor {
 					Player p = (Player) sender;
 
 					ItemStack i = p.getInventory().getItemInMainHand();
-					if (i.getType() == Material.AIR || i.getType() == null) {
+					if (i.getType() == Material.AIR) {
 						p.sendMessage(ChatColor.RED + "You can't sell nothing!");
 						return true;
 					}
