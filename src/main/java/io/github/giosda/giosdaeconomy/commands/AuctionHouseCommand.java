@@ -81,7 +81,7 @@ public class AuctionHouseCommand implements CommandExecutor {
 		int i = 0;
 
 		for (AuctionItem auctionItem : Economy.auctionHouse) {
-			ItemStack item = auctionItem.getItem();
+			ItemStack item = auctionItem.getItem().clone();
 
 			if (item.hasItemMeta()) {
 				ItemMeta meta = item.getItemMeta();
