@@ -13,6 +13,7 @@ public class AutoSaveTask extends BukkitRunnable {
 	public void run() {
 		try {
 			Economy.saveBalances();
+			Economy.saveAuctionHouse();
 		} catch (IOException e) {
 			Economy.logger.info("Could not save player balances!");
 			Bukkit.broadcast(ChatColor.DARK_RED + "ERROR: Could not save player balances!", "op");
