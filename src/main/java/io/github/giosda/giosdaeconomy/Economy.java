@@ -98,7 +98,6 @@ public final class Economy extends JavaPlugin {
 		if (getConfig().contains("loginBalance")) loginBalance = (int) getConfig().get("loginBalance");
 	}
 
-	//TODO: shit dont work
 	public void loadAuctionHouse() throws IOException {
 		File file = new File("plugins/GioSDAs-Economy/auctionhouse.json");
 		file.createNewFile();
@@ -112,6 +111,7 @@ public final class Economy extends JavaPlugin {
 		auctionHouse = gson.fromJson(reader, type);
 
 		if (auctionHouse == null) auctionHouse = new ArrayList<>();
+		else auctionHouse.forEach(AuctionItem::deserializeItem);
 	}
 
 	public static void saveAuctionHouse() throws IOException {

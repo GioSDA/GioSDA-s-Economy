@@ -1,5 +1,6 @@
 package io.github.giosda.giosdaeconomy.objects;
 
+import io.github.giosda.giosdaeconomy.Economy;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -15,7 +16,9 @@ public class AuctionItem {
 	public int bid;
 	public UUID maxBidder;
 	public UUID seller;
-	public ItemStack item;
+
+	public transient ItemStack item;
+	public String serializedItem;
 
 	public int getBid() {
 		return this.bid;
@@ -49,25 +52,36 @@ public class AuctionItem {
 		this.item = item;
 	}
 
-	public static String serializeItem(ItemStack item) throws IOException {
+	public void serializeItem() {
 		ByteArrayOutputStream io = new ByteArrayOutputStream();
-		BukkitObjectOutputStream os = new BukkitObjectOutputStream(io);
-		os.writeObject(item);
-		os.flush();
+		try {
+			BukkitObjectOutputStream os = null;
+			os = new BukkitObjectOutputStream(io);
+			os.writeObject(item);
+			os.flush();
+		} catch (IOException e) {
+			Economy.logger.severe("Could not serialize itemstack!");
+			e.printStackTrace();
+		}
 
 		byte[] bs = io.toByteArray();
 
-		//Encode the serialized object into to the base64 format
-		return new String(Base64.getEncoder().encode(bs));
+		this.serializedItem = new String(Base64.getEncoder().encode(bs));
 	}
 
-	public static ItemStack deserializeItem(String serializedItem) throws ClassNotFoundException, IOException {
+	public void deserializeItem() {
 		byte[] bs = Base64.getDecoder().decode(serializedItem);
 
 		ByteArrayInputStream in = new ByteArrayInputStream(bs);
-		BukkitObjectInputStream is = new BukkitObjectInputStream(in);
+		BukkitObjectInputStream is = null;
+		try {
+			is = new BukkitObjectInputStream(in);
 
-		return (ItemStack) is.readObject();
+			this.item = (ItemStack) is.readObject();
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+			Economy.logger.severe("Could not deserialize itemstack!");
+		}
 	}
 
 	public AuctionItem(int bid, UUID seller, ItemStack item) {

@@ -12,12 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.util.io.BukkitObjectOutputStream;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 public class AuctionHouseCommand implements CommandExecutor {
@@ -53,6 +49,7 @@ public class AuctionHouseCommand implements CommandExecutor {
 							int startingBid = Integer.parseInt(args[1]);
 							if (startingBid > 0) {
 								AuctionItem item = new AuctionItem(startingBid, p.getUniqueId(), i);
+								item.serializeItem();
 								p.getInventory().removeItem(i);
 								Economy.auctionHouse.add(item);
 								p.sendMessage(ChatColor.GREEN + "Successfully put item up for auction!");
