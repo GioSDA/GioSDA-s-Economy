@@ -81,36 +81,47 @@ public class AuctionHouseCommand implements CommandExecutor {
 		int i = 0;
 
 		for (i = i; i < 45; i++) {
-			AuctionItem auctionItem = Economy.auctionHouse.get(i);
+			if (Economy.auctionHouse.size() > i) {
+				AuctionItem auctionItem = Economy.auctionHouse.get(i);
 
-			ItemStack item = auctionItem.getItem().clone();
+				ItemStack item = auctionItem.getItem().clone();
 
-			if (item.hasItemMeta()) {
-				ItemMeta meta = item.getItemMeta();
-				List<String> lore;
+				if (item.hasItemMeta()) {
+					ItemMeta meta = item.getItemMeta();
+					List<String> lore;
 
-				if (meta.hasLore()) lore = meta.getLore();
-				else lore = new ArrayList<>();
+					if (meta.hasLore()) lore = meta.getLore();
+					else lore = new ArrayList<>();
 
-				lore.add(ChatColor.BLUE + "Seller: " + ChatColor.AQUA + Bukkit.getPlayer(auctionItem.getSeller()).getName());
-				lore.add(ChatColor.BLUE + "Current bid: " + ChatColor.YELLOW + "$" + auctionItem.getBid());
+					lore.add(ChatColor.BLUE + "Seller: " + ChatColor.AQUA + Bukkit.getPlayer(auctionItem.getSeller()).getName());
+					lore.add(ChatColor.BLUE + "Current bid: " + ChatColor.YELLOW + "$" + auctionItem.getBid());
 
-				meta.setLore(lore);
-				item.setItemMeta(meta);
+					meta.setLore(lore);
+					item.setItemMeta(meta);
+				} else {
+					ItemMeta meta = new ItemStack(Material.IRON_SWORD).getItemMeta();
+					ArrayList<String> lore = new ArrayList<>();
+
+					lore.add(ChatColor.BLUE + "Seller: " + ChatColor.AQUA + Bukkit.getPlayer(auctionItem.getSeller()).getName());
+					lore.add(ChatColor.BLUE + "Current bid: " + ChatColor.YELLOW + "$" + auctionItem.getBid());
+
+					meta.setLore(lore);
+					item.setItemMeta(meta);
+				}
+
+				gui.setItem(i, item);
 			} else {
-				ItemMeta meta = new ItemStack(Material.IRON_SWORD).getItemMeta();
-				ArrayList<String> lore = new ArrayList<>();
-
-				lore.add(ChatColor.BLUE + "Seller: " + ChatColor.AQUA + Bukkit.getPlayer(auctionItem.getSeller()).getName());
-				lore.add(ChatColor.BLUE + "Current bid: " + ChatColor.YELLOW + "$" + auctionItem.getBid());
-
-				meta.setLore(lore);
-				item.setItemMeta(meta);
+				gui.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
 			}
-
-			gui.setItem(i, item);
-			i++;
 		}
+
+		ItemStack auctionDiamond = new ItemStack(Material.DIAMOND);
+		ItemMeta meta = new ItemStack(Material.IRON_SWORD).getItemMeta();
+		meta.setDisplayName(ChatColor.YELLOW + "Auction!");
+		auctionDiamond.setItemMeta(meta);
+
+		gui.addItem(auctionDiamond);
+		i++;
 
 		for (i = i; i < gui.getSize(); i++) {
 			gui.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
