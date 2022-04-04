@@ -7,6 +7,7 @@ import io.github.giosda.giosdaeconomy.commands.AuctionHouseCommand;
 import io.github.giosda.giosdaeconomy.commands.BalanceCommand;
 import io.github.giosda.giosdaeconomy.commands.DebugCommand;
 import io.github.giosda.giosdaeconomy.commands.PayCommand;
+import io.github.giosda.giosdaeconomy.listeners.InventoryInteractListener;
 import io.github.giosda.giosdaeconomy.listeners.PlayerJoinListener;
 import io.github.giosda.giosdaeconomy.objects.AuctionItem;
 import io.github.giosda.giosdaeconomy.runnables.AutoSaveTask;
@@ -38,7 +39,7 @@ public final class Economy extends JavaPlugin {
 			loadAuctionHouse();
 			loadBalances();
 		} catch (IOException e) {
-			getLogger().info("Gio's Economy had an issue loading data.");
+			getLogger().severe("Gio's Economy had an issue loading data.");
 			e.printStackTrace();
 		}
 
@@ -48,6 +49,7 @@ public final class Economy extends JavaPlugin {
 		getCommand("auction").setExecutor(new AuctionHouseCommand());
 
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
+		getServer().getPluginManager().registerEvents(new InventoryInteractListener(), this);
 
 		BukkitTask autoSaveTask = new AutoSaveTask().runTaskTimer(this, autoSaveInterval, autoSaveInterval);
 	}
@@ -98,6 +100,20 @@ public final class Economy extends JavaPlugin {
 		if (getConfig().contains("loginBalance")) loginBalance = (int) getConfig().get("loginBalance");
 	}
 
+	public static void saveAuctionHouse() throws IOException {
+		File file = new File("plugins/GioSDAs-Economy/auctionhouse.json");
+		file.createNewFile();
+
+		FileWriter writer = new FileWriter(file);
+
+		GsonBuilder builder = new GsonBuilder();
+		Gson gson = builder.setPrettyPrinting().create();
+
+		writer.write(gson.toJson(auctionHouse));
+		writer.flush();
+	}
+
+
 	public void loadAuctionHouse() throws IOException {
 		File file = new File("plugins/GioSDAs-Economy/auctionhouse.json");
 		file.createNewFile();
@@ -112,19 +128,6 @@ public final class Economy extends JavaPlugin {
 
 		if (auctionHouse == null) auctionHouse = new ArrayList<>();
 		else auctionHouse.forEach(AuctionItem::deserializeItem);
-	}
-
-	public static void saveAuctionHouse() throws IOException {
-		File file = new File("plugins/GioSDAs-Economy/auctionhouse.json");
-		file.createNewFile();
-
-		FileWriter writer = new FileWriter(file);
-
-		GsonBuilder builder = new GsonBuilder();
-		Gson gson = builder.setPrettyPrinting().create();
-
-		writer.write(gson.toJson(auctionHouse));
-		writer.flush();
 	}
 
 	public static int getLoginBalance() {

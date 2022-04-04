@@ -80,7 +80,7 @@ public class AuctionHouseCommand implements CommandExecutor {
 
 		int i = 0;
 
-		for (i = i; i < 45; i++) {
+		for (; i < 45; i++) {
 			if (Economy.auctionHouse.size() > i) {
 				AuctionItem auctionItem = Economy.auctionHouse.get(i);
 
@@ -104,6 +104,7 @@ public class AuctionHouseCommand implements CommandExecutor {
 
 					lore.add(ChatColor.BLUE + "Seller: " + ChatColor.AQUA + Bukkit.getPlayer(auctionItem.getSeller()).getName());
 					lore.add(ChatColor.BLUE + "Current bid: " + ChatColor.YELLOW + "$" + auctionItem.getBid());
+					lore.add(ChatColor.GREEN + "Up for auction!");
 
 					meta.setLore(lore);
 					item.setItemMeta(meta);
@@ -115,15 +116,7 @@ public class AuctionHouseCommand implements CommandExecutor {
 			}
 		}
 
-		ItemStack auctionDiamond = new ItemStack(Material.DIAMOND);
-		ItemMeta meta = new ItemStack(Material.IRON_SWORD).getItemMeta();
-		meta.setDisplayName(ChatColor.YELLOW + "Auction!");
-		auctionDiamond.setItemMeta(meta);
-
-		gui.addItem(auctionDiamond);
-		i++;
-
-		for (i = i; i < gui.getSize(); i++) {
+		for (; i < gui.getSize(); i++) {
 			gui.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
 		}
 
