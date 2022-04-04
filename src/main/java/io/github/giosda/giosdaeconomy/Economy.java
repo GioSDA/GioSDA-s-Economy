@@ -51,7 +51,7 @@ public final class Economy extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
 		getServer().getPluginManager().registerEvents(new InventoryInteractListener(), this);
 
-		BukkitTask autoSaveTask = new AutoSaveTask().runTaskTimer(this, autoSaveInterval, autoSaveInterval);
+		new AutoSaveTask().runTaskTimer(this, autoSaveInterval, autoSaveInterval);
 	}
 
 	@Override
