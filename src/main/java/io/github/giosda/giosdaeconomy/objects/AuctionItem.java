@@ -1,14 +1,20 @@
 package io.github.giosda.giosdaeconomy.objects;
 
 import io.github.giosda.giosdaeconomy.Economy;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 
 public class AuctionItem {
@@ -81,6 +87,35 @@ public class AuctionItem {
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 			Economy.logger.severe("Could not deserialize itemstack!");
+		}
+	}
+
+	public ItemStack toItemStack() {
+		ItemStack item = this.getItem().clone();
+
+		if (item.hasItemMeta()) {
+			ItemMeta meta = item.getItemMeta();
+			List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
+
+			lore.add(ChatColor.BLUE + "Seller: " + ChatColor.AQUA + Bukkit.getPlayer(this.getSeller()).getName());
+			lore.add(ChatColor.BLUE + "Current bid: " + ChatColor.YELLOW + "$" + this.getBid());
+
+			meta.setLore(lore);
+			item.setItemMeta(meta);
+
+			return item;
+		} else {
+			ItemMeta meta = new ItemStack(Material.IRON_SWORD).getItemMeta();
+			ArrayList<String> lore = new ArrayList<>();
+
+			lore.add(ChatColor.BLUE + "Seller: " + ChatColor.AQUA + Bukkit.getPlayer(this.getSeller()).getName());
+			lore.add(ChatColor.BLUE + "Current bid: " + ChatColor.YELLOW + "$" + this.getBid());
+			lore.add(ChatColor.GREEN + "Up for auction!");
+
+			meta.setLore(lore);
+			item.setItemMeta(meta);
+
+			return item;
 		}
 	}
 

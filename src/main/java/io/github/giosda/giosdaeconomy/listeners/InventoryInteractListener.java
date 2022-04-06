@@ -1,5 +1,6 @@
 package io.github.giosda.giosdaeconomy.listeners;
 
+import io.github.giosda.giosdaeconomy.Economy;
 import io.github.giosda.giosdaeconomy.objects.AuctionHouse;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,7 +11,12 @@ public class InventoryInteractListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
-		if (e.getInventory().getHolder() instanceof AuctionHouse) e.setCancelled(true);
+		if (e.getInventory().getHolder() instanceof AuctionHouse) {
+			e.setCancelled(true);
+			if (e.getRawSlot() < Economy.auctionHouse.size()) {
+				((AuctionHouse) e.getInventory().getHolder()).createBuyGUI(e.getRawSlot());
+			}
+		}
 	}
 
 	@EventHandler

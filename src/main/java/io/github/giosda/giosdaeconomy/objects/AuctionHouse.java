@@ -8,10 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AuctionHouse implements InventoryHolder {
 
@@ -23,8 +19,6 @@ public class AuctionHouse implements InventoryHolder {
 		Economy.logger.info("Test");
 
 		createAuctionGUI();
-
-		player.openInventory(inventory);
 	}
 
 	public void createAuctionGUI() {
@@ -34,30 +28,7 @@ public class AuctionHouse implements InventoryHolder {
 
 		for (; i < 45; i++) {
 			if (Economy.auctionHouse.size() > i) {
-				AuctionItem auctionItem = Economy.auctionHouse.get(i);
-
-				ItemStack item = auctionItem.getItem().clone();
-
-				if (item.hasItemMeta()) {
-					ItemMeta meta = item.getItemMeta();
-					List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
-
-					lore.add(ChatColor.BLUE + "Seller: " + ChatColor.AQUA + Bukkit.getPlayer(auctionItem.getSeller()).getName());
-					lore.add(ChatColor.BLUE + "Current bid: " + ChatColor.YELLOW + "$" + auctionItem.getBid());
-
-					meta.setLore(lore);
-					item.setItemMeta(meta);
-				} else {
-					ItemMeta meta = new ItemStack(Material.IRON_SWORD).getItemMeta();
-					ArrayList<String> lore = new ArrayList<>();
-
-					lore.add(ChatColor.BLUE + "Seller: " + ChatColor.AQUA + Bukkit.getPlayer(auctionItem.getSeller()).getName());
-					lore.add(ChatColor.BLUE + "Current bid: " + ChatColor.YELLOW + "$" + auctionItem.getBid());
-					lore.add(ChatColor.GREEN + "Up for auction!");
-
-					meta.setLore(lore);
-					item.setItemMeta(meta);
-				}
+				ItemStack item = Economy.auctionHouse.get(i).toItemStack();
 
 				inventory.setItem(i, item);
 			} else {
@@ -68,6 +39,20 @@ public class AuctionHouse implements InventoryHolder {
 		for (; i < inventory.getSize(); i++) {
 			inventory.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
 		}
+
+		player.openInventory(inventory);
+	}
+
+	public void createBuyGUI(int index) {
+		inventory = Bukkit.createInventory(this, 6*9, ChatColor.AQUA + "Auction House");
+
+		for (int i = 0; i < inventory.getSize(); i++) {
+			inventory.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+		}
+
+		inventory.setItem(13, Economy.auctionHouse.get(index).toItemStack());
+
+		player.openInventory(inventory);
 	}
 
 	@Override
