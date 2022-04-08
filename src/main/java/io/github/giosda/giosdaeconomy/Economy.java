@@ -32,8 +32,8 @@ public final class Economy extends JavaPlugin {
 
 		if (getConfig().contains("loginBalance")) loginBalance = (int) getConfig().get("loginBalance");
 
-		DataStore.loadAuctionHouse();
-		DataStore.loadBalances();
+		auctionHouse = DataStore.loadAuctionHouse();
+		playerBalances = DataStore.loadBalances();
 
 		getCommand("balance").setExecutor(new BalanceCommand());
 		getCommand("pay").setExecutor(new PayCommand());
