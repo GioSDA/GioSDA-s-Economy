@@ -1,8 +1,5 @@
 package io.github.giosda.giosdaeconomy;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import io.github.giosda.giosdaeconomy.commands.AuctionHouseCommand;
 import io.github.giosda.giosdaeconomy.commands.BalanceCommand;
 import io.github.giosda.giosdaeconomy.commands.DebugCommand;
@@ -11,11 +8,9 @@ import io.github.giosda.giosdaeconomy.listeners.InventoryInteractListener;
 import io.github.giosda.giosdaeconomy.listeners.PlayerJoinListener;
 import io.github.giosda.giosdaeconomy.objects.AuctionItem;
 import io.github.giosda.giosdaeconomy.runnables.AutoSaveTask;
+import io.github.giosda.giosdaeconomy.toolbox.DataStore;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 
-import java.io.*;
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -35,13 +30,10 @@ public final class Economy extends JavaPlugin {
 		saveDefaultConfig();
 		addDefaults();
 
-		try {
-			loadAuctionHouse();
-			loadBalances();
-		} catch (IOException e) {
-			getLogger().severe("Gio's Economy had an issue loading data.");
-			e.printStackTrace();
-		}
+		if (getConfig().contains("loginBalance")) loginBalance = (int) getConfig().get("loginBalance");
+
+		DataStore.loadAuctionHouse();
+		DataStore.loadBalances();
 
 		getCommand("balance").setExecutor(new BalanceCommand());
 		getCommand("pay").setExecutor(new PayCommand());
@@ -56,78 +48,13 @@ public final class Economy extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		try {
-			saveBalances();
-			saveAuctionHouse();
-		} catch (IOException e) {
-			getLogger().info("Couldn't save data!");
-			e.printStackTrace();
-		}
+		DataStore.saveBalances(playerBalances);
+		DataStore.saveAuctionHouse(auctionHouse);
 	}
 
 	public void addDefaults() {
 		getConfig().addDefault("loginBalance", 1000);
 		getConfig().addDefault("autoSaveInterval", 6000);
-	}
-
-	public static void saveBalances() throws IOException {
-		File file = new File("plugins/GioSDAs-Economy/balances.json");
-		file.createNewFile();
-
-		FileWriter writer = new FileWriter(file);
-
-		GsonBuilder builder = new GsonBuilder();
-		Gson gson = builder.create();
-
-		writer.write(gson.toJson(playerBalances));
-		writer.flush();
-	}
-
-	public void loadBalances() throws IOException {
-		File file = new File("plugins/GioSDAs-Economy/balances.json");
-		file.createNewFile();
-
-		FileReader reader = new FileReader(file);
-
-		GsonBuilder builder = new GsonBuilder();
-		Gson gson = builder.create();
-
-		Type type = new TypeToken<HashMap<UUID, Integer>>(){}.getType();
-		playerBalances = gson.fromJson(reader, type);
-
-		if (playerBalances == null) playerBalances = new HashMap<>();
-
-		if (getConfig().contains("loginBalance")) loginBalance = (int) getConfig().get("loginBalance");
-	}
-
-	public static void saveAuctionHouse() throws IOException {
-		File file = new File("plugins/GioSDAs-Economy/auctionhouse.json");
-		file.createNewFile();
-
-		FileWriter writer = new FileWriter(file);
-
-		GsonBuilder builder = new GsonBuilder();
-		Gson gson = builder.setPrettyPrinting().create();
-
-		writer.write(gson.toJson(auctionHouse));
-		writer.flush();
-	}
-
-
-	public void loadAuctionHouse() throws IOException {
-		File file = new File("plugins/GioSDAs-Economy/auctionhouse.json");
-		file.createNewFile();
-
-		FileReader reader = new FileReader(file);
-
-		GsonBuilder builder = new GsonBuilder();
-		Gson gson = builder.create();
-
-		Type type = new TypeToken<ArrayList<AuctionItem>>(){}.getType();
-		auctionHouse = gson.fromJson(reader, type);
-
-		if (auctionHouse == null) auctionHouse = new ArrayList<>();
-		else auctionHouse.forEach(AuctionItem::deserializeItem);
 	}
 
 	public static int getLoginBalance() {

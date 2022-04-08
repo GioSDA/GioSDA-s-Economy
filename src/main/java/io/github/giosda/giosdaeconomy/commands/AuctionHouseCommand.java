@@ -1,7 +1,7 @@
 package io.github.giosda.giosdaeconomy.commands;
 
 import io.github.giosda.giosdaeconomy.Economy;
-import io.github.giosda.giosdaeconomy.objects.AuctionHouse;
+import io.github.giosda.giosdaeconomy.objects.AuctionHouseGUI;
 import io.github.giosda.giosdaeconomy.objects.AuctionItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,7 +20,7 @@ public class AuctionHouseCommand implements CommandExecutor {
 				Player p = (Player) sender;
 
 				if (Economy.playerBalances.containsKey(p.getUniqueId())) {
-					new AuctionHouse(p);
+					new AuctionHouseGUI(p);
 				} else {
 					sender.sendMessage(ChatColor.DARK_RED + "What have you done");
 				}

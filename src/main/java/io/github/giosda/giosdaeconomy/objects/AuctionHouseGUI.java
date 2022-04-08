@@ -9,19 +9,21 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-public class AuctionHouse implements InventoryHolder {
+public class AuctionHouseGUI implements InventoryHolder {
 
 	private Inventory inventory;
 	private Player player;
 
-	public AuctionHouse(Player p) {
+	public AuctionHouseState state;
+
+	public AuctionHouseGUI(Player p) {
 		this.player = p;
-		Economy.logger.info("Test");
 
 		createAuctionGUI();
 	}
 
 	public void createAuctionGUI() {
+		state = AuctionHouseState.AUCTION_HOUSE;
 		inventory = Bukkit.createInventory(this, 6*9, ChatColor.AQUA + "Auction House");
 
 		int i = 0;
@@ -44,6 +46,7 @@ public class AuctionHouse implements InventoryHolder {
 	}
 
 	public void createBuyGUI(int index) {
+		state = AuctionHouseState.AUCTION_BUY;
 		inventory = Bukkit.createInventory(this, 6*9, ChatColor.AQUA + "Auction House");
 
 		for (int i = 0; i < inventory.getSize(); i++) {
@@ -53,6 +56,10 @@ public class AuctionHouse implements InventoryHolder {
 		inventory.setItem(13, Economy.auctionHouse.get(index).toItemStack());
 
 		player.openInventory(inventory);
+	}
+
+	public AuctionHouseState getState() {
+		return state;
 	}
 
 	@Override
